@@ -112,10 +112,12 @@ class TelegramUploader:
 
     async def _msg_to_reply(self):
         if self._listener.up_dest:
+            _m = self._listener.message
+            _txt = getattr(_m, "text", None) or getattr(_m, "caption", None) or ""
             msg = (
-                self._listener.message.link
+                (getattr(_m, "link", None) or _txt.lstrip("/") or self._listener.name)
                 if self._listener.is_super_chat
-                else self._listener.message.text.lstrip("/")
+                else (_txt.lstrip("/") or getattr(_m, "link", None) or self._listener.name)
             )
             try:
                 if self._user_session:
