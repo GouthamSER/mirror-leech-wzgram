@@ -1,13 +1,31 @@
 try:
     from wzgram import Client, enums
-    from wzgram.types import LinkPreviewOptions
+    from wzgram.errors import QueryIdInvalid
+    from wzgram.types import CallbackQuery, LinkPreviewOptions
 except ImportError:
     from pyrogram import Client, enums
-    from pyrogram.types import LinkPreviewOptions
+    from pyrogram.errors import QueryIdInvalid
+    from pyrogram.types import CallbackQuery, LinkPreviewOptions
 from asyncio import Lock
 
 from .. import LOGGER
 from .config_manager import Config
+
+
+# Stale/expired callback queries (old status buttons, slow bot, restarts) make
+# Telegram return QUERY_ID_INVALID. Answering is cosmetic, so swallow it and
+# let the handler continue instead of dying with "Task exception never retrieved".
+_orig_cb_answer = CallbackQuery.answer
+
+
+async def _safe_cb_answer(self, *args, **kwargs):
+    try:
+        return await _orig_cb_answer(self, *args, **kwargs)
+    except QueryIdInvalid:
+        return False
+
+
+CallbackQuery.answer = _safe_cb_answer
 
 
 class TgClient:
