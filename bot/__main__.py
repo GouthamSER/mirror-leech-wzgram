@@ -17,6 +17,9 @@ async def main():
         update_variables,
     )
 
+    from .helper.ext_utils.health_server import start_health_server
+
+    await start_health_server()
     await load_settings()
 
     await gather(TgClient.start_bot(), TgClient.start_user())
