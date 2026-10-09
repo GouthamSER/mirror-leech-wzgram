@@ -1,3 +1,10 @@
+from os import environ
+
+# wzgram default TCP read timeout is 10s. Busy host (big upload, low CPU, slow
+# net) stalls mid-packet -> "Connection desynchronised mid-message" -> session
+# restart -> "Request timed out". Raise before wzgram/pyrogram is imported.
+environ.setdefault("WZGRAM_TCP_TIMEOUT", "60")
+
 from uvloop import install
 
 install()
