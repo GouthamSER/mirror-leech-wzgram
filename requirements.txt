@@ -21,7 +21,7 @@ par2cmdline-turbo
 pillow
 psutil
 pymongo
-wzgram
+wzgram==3.1.2
 python-magic
 requests
 telegraph
